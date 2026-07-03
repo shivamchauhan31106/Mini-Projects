@@ -1,0 +1,100 @@
+class Patient:
+    def __init__(self, p_id, name, age, disease):
+        if not p_id or not name:
+            raise ValueError("Invalid Data")
+        self.p_id = p_id
+        self.name = name
+        self.age = age
+        self.disease = disease
+
+class Doctor:
+    def __init__(self, d_id, name, spec):
+        self.d_id = d_id
+        self.name = name
+        self.spec = spec
+
+P_FILE, D_FILE = "patients.txt", "doctors.txt"
+patients, doctors = {}, {}
+
+def save():
+    with open(P_FILE, 'w') as f:
+        for p in patients.values():
+            f.write(f"{p.p_id},{p.name},{p.age},{p.disease}\n")
+    with open(D_FILE, 'w') as f:
+        for d in doctors.values():
+            f.write(f"{d.d_id},{d.name},{d.spec}\n")
+
+def load():
+    try:
+        with open(P_FILE, 'r') as f:
+            for line in f:
+                v = line.strip().split(',')
+                if len(v) == 4:
+                    patients[v[0]] = Patient(v[0], v[1], int(v[2]), v[3])
+        with open(D_FILE, 'r') as f:
+            for line in f:
+                v = line.strip().split(',')
+                if len(v) == 3:
+                    doctors[v[0]] = Doctor(v[0], v[1], v[2])
+    except FileNotFoundError:
+        pass
+
+load()
+
+while True:
+    print("==== HOSPITAL MANAGEMENT SYSTEM ====")
+    print(" 1. New Patient")
+    print(" 2. New Doctor")
+    print(" 3. Appointment")
+    print(" 4. All Patients")
+    print(" 5. All Doctors")
+    print(" 6. Exit")
+    print("-"*40)
+
+    choice = input("Select Option (1-6): ").strip()
+
+    try:
+        if choice == '1':
+            print("\n-- Register Patient --")
+            p = Patient(input("ID: "), input("Name: "), int(input("Age: ")), input("Disease: "))
+            patients[p.p_id] = p
+            save()
+            print("\nPatient Saved.")
+
+        elif choice == '2':
+            print("\n-- Register Doctor --")
+            d = Doctor(input("ID: "), input("Name: "), input("Spec: "))
+            doctors[d.d_id] = d
+            save()
+            print("\nDoctor Saved.")
+
+        elif choice == '3':
+            print("\n-- Book Appointment --")
+            pid, did = input("Patient ID: "), input("Doctor ID: ")
+            if pid in patients and did in doctors:
+                print(f"\nSuccess: {patients[pid].name} booked with Dr. {doctors[did].name}")
+            else:
+                print("\nError: ID not found.")
+
+        elif choice == '4':
+            print("\n-- Patient List --")
+            if not patients:
+                print("No records found.")
+            else:
+                for p in patients.values():
+                    print(f"- ID: {p.p_id} | Name: {p.name.ljust(15)} | Disease: {p.disease}")
+
+        elif choice == '5':
+            print("\n-- Doctor List --")
+            if not doctors:
+                print("No records found.")
+            else:
+                for d in doctors.values():
+                    print(f"- ID: {d.d_id} | Name: {d.name.ljust(15)} | Spec: {d.spec}")
+
+        elif choice == '6':
+            print("Exiting...")
+            break
+
+    except Exception as e:
+        print(f"\nError: {e}")
