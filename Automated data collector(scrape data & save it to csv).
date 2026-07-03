@@ -1,0 +1,36 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import os
+
+# 1. Setup - Fetching the webpage
+url = 'http://quotes.toscrape.com/'
+try:
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+
+    # 2. Parsing - Extract data using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
+    quotes_list = []
+
+    for quote in soup.find_all('div', class_='quote'):
+        text = quote.find('span', class_='text').text
+        author = quote.find('small', class_='author').text
+        tags = [tag.text for tag in quote.find_all('a', class_='tag')]
+        quotes_list.append({
+            'quote': text,
+            'author': author,
+            'tags': ', '.join(tags)
+        })
+
+    # 3. Saving - Convert to CSV
+    df = pd.DataFrame(quotes_list)
+    output_file = 'scraped_quotes.csv'
+    df.to_csv(output_file, index=False)
+
+    print(f"Success! Scraped {len(df)} quotes.")
+    print(f"File saved as: {os.path.abspath(output_file)}")
+    display(df.head())
+
+except Exception as e:
+    print(f"An error occurred: {e}")
