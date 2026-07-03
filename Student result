@@ -1,0 +1,38 @@
+students = {}
+
+num = int(input("How many students? "))
+
+for i in range(num):
+    name = input("Enter student name: ")
+    marks = int(input(f"Enter marks for {name}: "))
+    students[name] = marks
+
+grades = []
+total_marks = sum(students.values())
+avg = total_marks / len(students)
+topper = max(students, key=students.get)
+top_marks = students[topper]
+
+for name, marks in students.items():
+    if marks >= 90:
+        grade = "A+"
+    elif marks >= 80:
+        grade = "B"
+    elif marks >= 70:
+        grade = "C"
+    elif marks >= 60:
+        grade = "D"
+    else:
+        grade = "Fail"
+    grades.append((name, grade))
+
+print("\nStudent Marks")
+for name, marks in students.items():
+    print(f"{name}: {marks}")
+
+print("\nAverage Marks:", avg)
+print(f"\nTopper: {topper} ({top_marks} marks)")
+
+print("\nGrades:")
+for name, grade in grades:
+    print(f"{name}: Grade {grade}")
